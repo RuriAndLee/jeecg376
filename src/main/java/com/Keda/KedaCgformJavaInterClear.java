@@ -1,4 +1,4 @@
-package com.Keda;
+package com.keda;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

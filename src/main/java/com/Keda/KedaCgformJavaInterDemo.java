@@ -1,4 +1,4 @@
-package com.Keda;
+package com.keda;
 
 import org.jeecgframework.core.common.exception.BusinessException;
 import org.jeecgframework.core.util.LogUtil;

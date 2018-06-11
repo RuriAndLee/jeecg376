@@ -1,4 +1,4 @@
-package com.Keda;
+package com.keda;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,8 +10,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.jeecgframework.core.common.exception.BusinessException;
-import com.Keda.KedaCgformJavaInterDemo;
+
+import com.keda.KedaCgformJavaInterDemo;
+
 import org.jeecgframework.web.system.sms.service.TSSmsServiceI;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -39,7 +42,7 @@ public class KedaPutawaySendTask implements Job{
 
 	public void work(){
 		long start = System.currentTimeMillis();
-		org.jeecgframework.core.util.LogUtil.info("===================测试定时任务开始===================");	
+		org.jeecgframework.core.util.LogUtil.info("===================定时入库任务开始===================");	
 		//连接JDBC
 		String driver = "com.mysql.jdbc.Driver";    
     	String URL = "jdbc:mysql://localhost:3306/jeecg376";
@@ -53,7 +56,7 @@ public class KedaPutawaySendTask implements Job{
 		      con = DriverManager.getConnection(URL, USER, PASS);
 		       stmt = con.createStatement();
 		      //查询status为0的id 
-		      String sql ="SELECT f.id from wms_fetch f,wms_fetchdtl fdtl WHERE f.id=fdtl.fetchid and f.status=0 and f.error_msg=null;";
+		      String sql ="SELECT f.id from wms_fetch f,wms_fetchdtl fdtl WHERE f.id=fdtl.fetchid and f.status=0 and f.error_msg is null;";
 		      ResultSet rs = stmt.executeQuery(sql);
 		      while(rs.next()){
 		    	String id =rs.getString("id");
@@ -87,7 +90,7 @@ public class KedaPutawaySendTask implements Job{
 			
 			e.printStackTrace();
 		}
-		org.jeecgframework.core.util.LogUtil.info("===================测试定时任务结束===================");
+		org.jeecgframework.core.util.LogUtil.info("===================定时入库任务结束===================");
 		long end = System.currentTimeMillis();
 		long times = end - start;
 		org.jeecgframework.core.util.LogUtil.info("总耗时"+times+"毫秒");
