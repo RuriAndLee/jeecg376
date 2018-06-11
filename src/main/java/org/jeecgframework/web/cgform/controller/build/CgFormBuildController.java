@@ -710,7 +710,7 @@ public class CgFormBuildController extends BaseController {
 			logger.info("["+IpUtil.getIpAddr(request)+"][online表单自定义按钮action触发]"+message+"表名："+tableName);
 		} catch (Exception e) {
 			e.printStackTrace();
-			message = "操作失败";
+			message = e.getMessage();
 		}
 		j.setMsg(message);
 		return j;
