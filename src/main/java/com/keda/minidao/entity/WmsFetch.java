@@ -21,14 +21,14 @@ public class WmsFetch implements java.io.Serializable {
 	private String bpmStatus;
 	private String fetchno;
 	private String status;
-
+	private String error_msg;
 	public WmsFetch() {
 	}
 
 	public WmsFetch(String createName, String createBy, String createDate,
 			String updateName, String updateBy, Date updateDate,
 			String sysOrgCode, String sysCompanyCode, String bpmStatus,
-			String fetchno, String status) {
+			String fetchno, String status,String error_msg) {
 		this.createName = createName;
 		this.createBy = createBy;
 		this.createDate = createDate;
@@ -40,6 +40,7 @@ public class WmsFetch implements java.io.Serializable {
 		this.bpmStatus = bpmStatus;
 		this.fetchno = fetchno;
 		this.status = status;
+		this.error_msg = error_msg;
 	}
 
 	public Integer getId() {
@@ -136,6 +137,14 @@ public class WmsFetch implements java.io.Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	
+	public String getError_msg(){
+		return this.error_msg;
+	}
+	
+	public void setError_msg(String error_msg){
+		this.error_msg =error_msg;
 	}
 
 }

@@ -3,6 +3,27 @@ package com.keda.minidao.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.jeecgframework.core.common.exception.BusinessException;
+import org.jeecgframework.minidao.annotation.Arguments;
+import org.jeecgframework.minidao.annotation.IdAutoGenerator;
+import org.jeecgframework.minidao.annotation.Param;
+import org.jeecgframework.minidao.annotation.ResultType;
+import org.jeecgframework.minidao.annotation.Sql;
+import org.jeecgframework.minidao.pojo.MiniDaoPage;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.keda.minidao.entity.WmsTrans;
+
+
+
+/**
+ * 描述：交易
+ * @author：pengwei
+ * @since：2018年06月13日 09时49分11秒 星期三
+ * @version:1.0
+ */
+
 import org.jeecgframework.minidao.annotation.Arguments;
 import org.jeecgframework.minidao.annotation.IdAutoGenerator;
 import org.jeecgframework.minidao.annotation.Param;

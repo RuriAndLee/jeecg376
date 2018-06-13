@@ -31,24 +31,25 @@ public class ConstSetBA {
      * 2018-06-06 pengwei
      * 通知单总单状态 
      */
-	  public static final long FETCHSTATUS_INVALID = 0; //作废
-	  public static final long FETCHSTATUS_INPUT = 1; //录入
-	  public static final long FETCHSTATUS_FINISHED = 2; //完成
-	  public static final long FETCHSTATUS_RG=3; 
-	  public static final long FETCHSTATUS_CHECK=4; 
-	  public static final long FETCHSTATUS_RACK =5; 
+	  public static final String FETCHSTATUS_INVALID = "0"; //作废
+	  public static final String FETCHSTATUS_INPUT = "1"; //录入
+	  public static final String FETCHSTATUS_FINISHED = "2"; //完成
+	  public static final String FETCHSTATUS_RG="3"; 
+	  public static final String FETCHSTATUS_CHECK="4"; 
+	  public static final String FETCHSTATUS_RACK ="5"; 
 	  
 	
 	
 	
 	  //交易类型
-	  static public final long TRANSTYPE_IN = 1; //入库
-      static public final long TRANSTYPE_OUT = 0; //出库
+	  static public final String TRANSTYPE_IN = "1"; //入库
+      static public final String TRANSTYPE_OUT = "0"; //出库
 	
 	  //交易状态
-	    static public final long TRANS_STATUS_INIT = 0; //初始
-	    static public final long TRANS_STATUS_UNDER = 1; //进行
-	    static public final long TRANS_STATUS_FINISHED = 2; //完成
+	    static public final String TRANS_STATUS_INIT = "0"; //初始
+	    static public final String TRANS_STATUS_UNDER = "1"; //进行
+	    static public final String TRANS_STATUS_FINISHED = "2"; //完成
+	    
 	
 	
 	

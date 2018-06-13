@@ -1,31 +1,57 @@
 package com.keda.minidao.service;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jeecgframework.core.common.exception.BusinessException;
 import org.jeecgframework.minidao.pojo.MiniDaoPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.keda.ConstSetBA;
+import com.keda.KedaTransMgr;
 import com.keda.minidao.dao.WmsFetchDao;
+import com.keda.minidao.dao.WmsFetchdtlDao;
+import com.keda.minidao.dao.WmsLocDao;
+import com.keda.minidao.dao.WmsStockDao;
+import com.keda.minidao.dao.WmsTransDao;
 import com.keda.minidao.entity.WmsFetch;
+import com.keda.minidao.entity.WmsFetchdtl;
+import com.keda.minidao.entity.WmsLoc;
+import com.keda.minidao.entity.WmsStock;
+import com.keda.minidao.entity.WmsTrans;
 
 
 @Service
 public class WmsFetchService {
-
+    static private Log log = LogFactory.getLog(KedaTransMgr.class.getName());
+    @Autowired
+    private WmsTransDao transDao;
+    @Autowired
+	private WmsFetchDao fetchDao;
+    @Autowired
+	private WmsLocDao locDao;
+	@Autowired
+	private WmsFetchdtlDao fetchdtlDao;
+	@Autowired
+	private WmsStockDao stockDao;
 	@Autowired
 	private WmsFetchDao wmsFetchDao;
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public void sayHello(){
-		wmsFetchDao.getCount();
-	}
+//	public void sayHello(){
+//		wmsFetchDao.getCount();
+//	}
 	
 	/**
 	 * 执行存储过程
@@ -58,29 +84,181 @@ public class WmsFetchService {
 	 * 事务一致性测试
 	 */
 	@Transactional
-	public void testTransactionalInsert(){
-		WmsFetch wmsFetch = new WmsFetch();
-		String id = UUID.randomUUID().toString().replaceAll("-", "").toUpperCase();
-		wmsFetch.setId(new Integer(id));
-//		wmsFetch.setEmpno("C0000001");
-//		wmsFetch.setSalary(new BigDecimal(5000));
-//		wmsFetch.setBirthday(new Date());
-//		wmsFetch.setName("测试事务一致性");
-//		wmsFetch.setAge(30);
-		//调用minidao方法
-		wmsFetchDao.insert(wmsFetch);
-		
-		
-		int i = Integer.parseInt("ss");
-		WmsFetch wmsFetch2 = new WmsFetch();
-		String id2 = UUID.randomUUID().toString().replaceAll("-", "").toUpperCase();
-		wmsFetch2.setId(new Integer(id2));
-//		wmsFetch2.setEmpno("C0000001");
-//		wmsFetch2.setSalary(new BigDecimal(5000));
-//		wmsFetch2.setBirthday(new Date());
-//		wmsFetch2.setName("测试事务一致性");
-//		wmsFetch2.setAge(25);
-		//调用minidao方法
-		wmsFetchDao.insert(wmsFetch2);
+	public void fetchTransactionalInsert(Map map){
+		WmsFetch fetch = new WmsFetch();
+		fetch = fetchDao.get((String)map.get("id"));
+		List<WmsFetchdtl> fetchdtllist = fetchdtlDao.getDtlByFetchId(fetch.getId());
+			for(WmsFetchdtl fdtl:fetchdtllist){
+				String locno = findLoc(fdtl.getGoodsno());
+				//查找货位
+				if(locno == null || locno == ""){
+					throw new BusinessException("当前无空货位");
+				}
+				WmsStock stock = new WmsStock();
+				stock.setGoodsno(fdtl.getGoodsno());
+				stock.setStockqty(fdtl.getFetchqty());
+				stock.setGoodsunit(fdtl.getGoodsunit());
+				stock.setGoodsname(fdtl.getGoodsname());
+				stock.setGoodssize(fdtl.getGoodssize());
+				stock.setCreateDate(new Date());
+				stock.setCreateBy(fetch.getCreateBy());
+				stock.setLocno(locno);
+				stockDao.insertNative(stock);
+				Map value = genTransValue(fetch,fdtl,stock);
+				try {
+					insertStoretrans(value);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				updateFetchStatus((String) map.get("id"));
+			}
+		} 
+	//查找货位
+	public String findLoc(String goodsno) throws BusinessException {
+	    String locno = null; 
+		WmsStock stock = new WmsStock();
+		stock.setGoodsno(goodsno);
+		//根据goodsno查找当前库存的货位编号
+		List<WmsStock> stocklist= stockDao.getStockByGoodsno(goodsno);//增加顶层标志判断 
+		for(WmsStock s:stocklist){
+			if (s.getLocno() != null) {
+				locno = (String)s.getLocno();
+				break;
+			}
+		}
+	    if(locno == null || locno == ""){
+	    	//查找当前空闲的货位
+	    	List<WmsLoc> loclist = locDao.getEmptyLoc();
+	    	for(WmsLoc loc:loclist){
+	    		if (loc.getLocno() != null) {
+					locno = (String)loc.getLocno();
+					break;
+				}
+	    	}
+	    }
+	    return locno;
+	}   
+	//组装交易信息生成交易记录
+	public Map genTransValue(WmsFetch fetch,WmsFetchdtl fdtl,WmsStock stock){
+		try {
+			Map transvalue = new HashMap();
+			transvalue.put("create_name", fetch.getCreateName());
+			transvalue.put("create_by",fetch.getCreateBy());
+			transvalue.put("create_date",stock.getCreateDate());
+			transvalue.put("transno",fetch.getFetchno());
+			transvalue.put("transdate",fetch.getCreateDate());
+			transvalue.put("transtype",ConstSetBA.TRANSTYPE_IN);
+			transvalue.put("goodaname",stock.getGoodsname());
+			transvalue.put("transqty",stock.getStockqty());
+			transvalue.put("locno",stock.getLocno());
+			transvalue.put("zoneno",stock.getZoneno());
+			transvalue.put("sourceid",fetch.getId());
+			transvalue.put("sourcedtlid",fdtl.getId());
+			transvalue.put("trstatus",ConstSetBA.TRANS_STATUS_FINISHED);
+			return transvalue;
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		}
+	}
+
+	//修改入库状态
+	public void updateFetchStatus(String fetchid) throws BusinessException {
+		try {
+			WmsFetch fetch = new WmsFetch();
+			fetch = fetchDao.get(fetchid);
+			fetch.setStatus(String.valueOf(ConstSetBA.FETCHSTATUS_FINISHED));
+			fetchDao.update(fetch);
+		} catch (Exception e) {
+			throw new BusinessException(e.getMessage());
+		}
+	}
+	public void insertStoretrans(Map values) throws Exception {
+		if (values == null) {
+			return;
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+//			WmsTransDao transDao = (WmsTransDao) factory.getBean("wmsTransDao");
+			WmsTrans trans = new WmsTrans();
+			
+			if (values.get("create_name") != null && !"".equals(values.get("create_name"))) {
+				trans.setCreateName((String) values.get("create_name"));
+			} else if (values.get("create_name") == null || "".equals(values.get("create_name"))) {
+				trans.setCreateName(null);
+			}
+			if (values.get("create_by") != null && !"".equals(values.get("create_by"))) {
+				trans.setCreateBy((String) values.get("create_by"));
+			} else if (values.get("create_by") == null || "".equals(values.get("create_by"))) {
+				trans.setCreateBy(null);
+			}
+			
+			if (values.get("create_date") != null && !"".equals(values.get("create_date"))) {
+				trans.setCreateDate((Date)values.get("create_date"));
+			} else if (values.get("create_date") == null || "".equals(values.get("create_date"))) {
+				trans.setCreateDate(new Date());
+			}
+			
+			if (values.get("transno") != null && !"".equals(values.get("transno"))) {
+				trans.setTransno((String) values.get("transno"));
+			} else if (values.get("transno") == null || "".equals(values.get("transno"))) {
+				trans.setTransno(null);
+			}
+			
+			if (values.get("transdate") != null && !"".equals(values.get("transdate"))) {
+				trans.setTransdate(sdf.parse((String)values.get("transdate")));
+			} else if (values.get("transdate") == null || "".equals(values.get("transdate"))) {
+				trans.setTransdate(new Date());
+			}
+			
+			if (values.get("transtype") != null && !"".equals(values.get("transtype"))) {
+				trans.setTranstype((String) values.get("transtype"));
+			} else if (values.get("transtype") == null || "".equals(values.get("transtype"))) {
+				trans.setTranstype(null);
+			}
+			
+			if (values.get("goodsname") != null && !"".equals(values.get("goodsname"))) {
+				trans.setGoodsname((String) values.get("goodsname"));
+			} else if (values.get("goodsname") == null || "".equals(values.get("goodsname"))) {
+				trans.setGoodsname(null);
+			}
+			
+			if (values.get("transqty") != null && !"".equals(values.get("transqty"))) {
+				trans.setTransqty((Integer.valueOf((String)values.get("transqty"))));
+			} else if (values.get("transqty") == null || "".equals(values.get("transqty"))) {
+				trans.setTransqty(null);
+			}
+			
+			if (values.get("locno") != null && !"".equals(values.get("locno"))) {
+				trans.setLocno((String) values.get("locno"));
+			} else if (values.get("locno") == null || "".equals(values.get("locno"))) {
+				trans.setLocno(null);
+			}
+			
+			if (values.get("zoneno") != null && !"".equals(values.get("zoneno"))) {
+				trans.setZoneno((String) values.get("zoneno"));
+			} else if (values.get("zoneno") == null || "".equals(values.get("zoneno"))) {
+				trans.setZoneno(null);
+			}
+			
+			if (values.get("sourceid") != null && !"".equals(values.get("sourceid"))) {
+				trans.setSourceid(String.valueOf((Integer)values.get("sourceid")));
+			} else if (values.get("sourceid") == null || "".equals(values.get("sourceid"))) {
+				trans.setSourceid(null);
+			}
+			
+			if (values.get("sourcedtlid") != null && !"".equals(values.get("sourcedtlid"))) {
+				trans.setSourcedtlid(String.valueOf((Integer)values.get("sourcedtlid")));
+			} else if (values.get("sourcedtlid") == null || "".equals(values.get("sourcedtlid"))) {
+				trans.setSourcedtlid(null);
+			}
+			if (values.get("trstatus") != null && !"".equals(values.get("trstatus"))) {
+				trans.setTrstatus((String) values.get("trstatus"));
+			} else if (values.get("trstatus") == null || "".equals(values.get("trstatus"))) {
+				trans.setTrstatus(null);
+			}
+
+			transDao.insertNative(trans);
 	}
 }

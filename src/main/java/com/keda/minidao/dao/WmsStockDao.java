@@ -3,6 +3,7 @@ package com.keda.minidao.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.jeecgframework.core.common.exception.BusinessException;
 import org.jeecgframework.minidao.annotation.Arguments;
 import org.jeecgframework.minidao.annotation.IdAutoGenerator;
 import org.jeecgframework.minidao.annotation.Param;

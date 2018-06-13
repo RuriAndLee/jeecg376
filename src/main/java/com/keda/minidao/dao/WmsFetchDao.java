@@ -12,6 +12,7 @@ import org.jeecgframework.minidao.pojo.MiniDaoPage;
 import org.springframework.stereotype.Repository;
 
 import com.keda.minidao.entity.WmsFetch;
+import com.keda.minidao.entity.WmsStock;
 
 
 /**
@@ -41,6 +42,14 @@ public interface WmsFetchDao {
 	 */
 	@Sql("select * from wms_fetch where id = '${id}'")
 	WmsFetch getF(@Param("id") String id);
+	
+	/**
+	 * 查询返回Java对象
+	 * @param id
+	 * @return
+	 */
+	@Sql("select * from wms_stock where status = :status and error_msg is :error_msg")
+	List<WmsFetch> getFetchBy(@Param("status") String status,@Param("error_msg") String error_msg);
 	
 	/**
 	 * 修改数据
@@ -99,14 +108,14 @@ public interface WmsFetchDao {
 	@Sql("select * from wms_fetch")
 	List<Map<String,Object>> getAll(WmsFetch fetch);
 	
+	
 	/**
-	 * 返回Map类型，支持多个参数
-	 * @param empno
-	 * @param name
+	 * 返回List<Map>类型，全部数据
+	 * @param id
 	 * @return
 	 */
-	@Sql("select * from wms_fetch where empno = :empno and  name = :name")
-	Map<String,Object> getMap(@Param("empno") String empno,@Param("name")String name);
+	@Sql("select id  from wms_fetch where status = :status and  error_msg is :error_msg")
+	List<Map<String,Object>> getMap(@Param("status") String status,@Param("error_msg") String error_msg);
 	
 	/**
 	 * 查询分页数量
