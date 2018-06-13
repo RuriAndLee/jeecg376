@@ -1,5 +1,7 @@
 package com.keda;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jeecgframework.core.common.exception.BusinessException;
 import org.jeecgframework.core.util.LogUtil;
 import org.jeecgframework.web.cgform.enhance.CgformEnhanceJavaInter;
@@ -22,13 +24,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service("kedacgformJavaInterDemo")
 public class KedaCgformJavaInterDemo implements CgformEnhanceJavaInter {
-	
+    static private Log log = LogFactory.getLog(KedaCgformJavaInterDemo.class.getName());
+
 	BeanFactory factory;
 	
 	public KedaCgformJavaInterDemo() {
@@ -41,6 +45,7 @@ public class KedaCgformJavaInterDemo implements CgformEnhanceJavaInter {
     	if (Long.valueOf((String) map.get("status")) == ConstSetBA.FETCHSTATUS_FINISHED) {
     		throw new BusinessException("已经完成的订单不能再次提交上架");
 		}
+    	
     	WmsFetchDao fetchDao = (WmsFetchDao) factory.getBean("wmsFetchDao");
 		WmsFetch fetch = new WmsFetch();
 		fetch = fetchDao.get((String)map.get("id"));
@@ -59,11 +64,38 @@ public class KedaCgformJavaInterDemo implements CgformEnhanceJavaInter {
 			stock.setGoodsunit(fdtl.getGoodsunit());
 			stock.setGoodsname(fdtl.getGoodsname());
 			stock.setGoodssize(fdtl.getGoodssize());
+			stock.setCreateDate(new Date());
+			stock.setCreateBy(fetch.getCreateBy());
 			stock.setLocno(locno);
 			stockDao.insertNative(stock);
+            genTransValue(fetch,fdtl,stock);
             updateFetchStatus((String) map.get("id"));
 		}
     }
+	
+	//组装交易信息生成交易记录
+	public void genTransValue(WmsFetch fetch,WmsFetchdtl fdtl,WmsStock stock){
+		try {
+			Map transvalue = new HashMap();
+			transvalue.put("create_name", fetch.getCreateName());
+			transvalue.put("create_by",fetch.getCreateBy());
+			transvalue.put("create_date",stock.getCreateDate());
+			transvalue.put("transno",fetch.getFetchno());
+			transvalue.put("transdate",fetch.getCreateDate());
+			transvalue.put("transtype",ConstSetBA.TRANSTYPE_IN);
+			transvalue.put("goodaname",stock.getGoodsname());
+			transvalue.put("transqty",stock.getStockqty());
+			transvalue.put("locno",stock.getLocno());
+			transvalue.put("zoneno",stock.getZoneno());
+			transvalue.put("sourceid",fetch.getId());
+			transvalue.put("sourcedtlid",fdtl.getId());
+			transvalue.put("trstatus",ConstSetBA.TRANS_STATUS_FINISHED);
+			KedaTransMgr.insertStoretrans(transvalue);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		}
+	}
     
     //查找货位
     public String findLoc(String goodsno) throws BusinessException {

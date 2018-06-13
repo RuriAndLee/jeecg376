@@ -41,10 +41,14 @@ public class ConstSetBA {
 	
 	
 	
+	  //交易类型
+	  static public final long TRANSTYPE_IN = 1; //入库
+      static public final long TRANSTYPE_OUT = 0; //出库
 	
-	
-	
-	
+	  //交易状态
+	    static public final long TRANS_STATUS_INIT = 0; //初始
+	    static public final long TRANS_STATUS_UNDER = 1; //进行
+	    static public final long TRANS_STATUS_FINISHED = 2; //完成
 	
 	
 	
@@ -77,8 +81,7 @@ public class ConstSetBA {
     static public final long RGSTATUS_INITIAL = 1;
     static public final long RGSTATUS_CONFIRMED = 2;
 
-    static public final long TRANSTYPE_IN = 1; //收货//入库
-    static public final long TRANSTYPE_OUT = 0; //补货//出库
+
     
     public static final short PUB_YESNO_YES = 1;
 	public static final short PUB_YESNO_NO = 0;
