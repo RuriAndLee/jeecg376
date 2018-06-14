@@ -31,6 +31,14 @@ public interface WmsLocDao {
 	 * @param id
 	 * @return
 	 */
+	@Sql("select * from wms_loc where locno = :locno")
+	WmsLoc getLocByLocno(@Param("locno") String locno);
+	
+	/**
+	 * 查询返回Java对象
+	 * @param id
+	 * @return
+	 */
 	@Sql("select * from wms_loc where id = :id")
 	WmsLoc get(@Param("id") String id);
 	

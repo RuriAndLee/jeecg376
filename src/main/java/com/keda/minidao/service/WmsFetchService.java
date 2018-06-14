@@ -89,11 +89,12 @@ public class WmsFetchService {
 		fetch = fetchDao.get((String)map.get("id"));
 		List<WmsFetchdtl> fetchdtllist = fetchdtlDao.getDtlByFetchId(fetch.getId());
 			for(WmsFetchdtl fdtl:fetchdtllist){
-				String locno = findLoc(fdtl.getGoodsno());
 				//查找货位
-				if(locno == null || locno == ""){
+				WmsLoc loc = findLoc(fdtl.getGoodsno());
+				if(loc == null){
 					throw new BusinessException("当前无空货位");
 				}
+				//根据货位查找
 				WmsStock stock = new WmsStock();
 				stock.setGoodsno(fdtl.getGoodsno());
 				stock.setStockqty(fdtl.getFetchqty());
@@ -102,7 +103,8 @@ public class WmsFetchService {
 				stock.setGoodssize(fdtl.getGoodssize());
 				stock.setCreateDate(new Date());
 				stock.setCreateBy(fetch.getCreateBy());
-				stock.setLocno(locno);
+				stock.setLocno(loc.getLocno());
+				stock.setZoneno(loc.getZoneno());
 				stockDao.insertNative(stock);
 				Map value = genTransValue(fetch,fdtl,stock);
 				try {
@@ -115,29 +117,28 @@ public class WmsFetchService {
 			}
 		} 
 	//查找货位
-	public String findLoc(String goodsno) throws BusinessException {
+	public WmsLoc findLoc(String goodsno) throws BusinessException {
 	    String locno = null; 
+	    WmsLoc loc = new WmsLoc();
 		WmsStock stock = new WmsStock();
 		stock.setGoodsno(goodsno);
 		//根据goodsno查找当前库存的货位编号
 		List<WmsStock> stocklist= stockDao.getStockByGoodsno(goodsno);//增加顶层标志判断 
 		for(WmsStock s:stocklist){
-			if (s.getLocno() != null) {
-				locno = (String)s.getLocno();
-				break;
+			if (s.getLocno() != null && s.getLocno() != "") {
+				loc = locDao.getLocByLocno((String)s.getLocno());
 			}
 		}
 	    if(locno == null || locno == ""){
 	    	//查找当前空闲的货位
 	    	List<WmsLoc> loclist = locDao.getEmptyLoc();
-	    	for(WmsLoc loc:loclist){
-	    		if (loc.getLocno() != null) {
-					locno = (String)loc.getLocno();
-					break;
+	    	for(WmsLoc l:loclist){
+	    		if (l.getLocno() != null) {
+					loc = l;
 				}
 	    	}
 	    }
-	    return locno;
+	    return loc;
 	}   
 	//组装交易信息生成交易记录
 	public Map genTransValue(WmsFetch fetch,WmsFetchdtl fdtl,WmsStock stock){
