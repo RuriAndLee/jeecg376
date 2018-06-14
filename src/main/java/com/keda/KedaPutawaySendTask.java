@@ -52,17 +52,14 @@ public class KedaPutawaySendTask implements Job{
 	    	java.util.List<Map<String, Object>> listone=fetchDao.getMap("0",null );
 	        for(int i=0;i<listone.size();i++) {
 	        	Map<String,Object> map1=listone.get(i);
-	        		Collection<Object> value =map1.values();
-	        		
-	    			map.put("id", value);
-	    			map.put("status", 0);
-	    			KedaCgformJavaInterDemo kedacgformJavaInterDemo = new KedaCgformJavaInterDemo();
-	    			kedacgformJavaInterDemo.execute("",map);
-	    		}
-		      
-
-			}	
-			
+	        	Object str1 =map1.get("id");
+	        	String str2 = str1 +"";
+	        	map.put("id", str2);
+				map.put("status", "0");
+    			KedaCgformJavaInterDemo kedacgformJavaInterDemo = new KedaCgformJavaInterDemo();
+    			kedacgformJavaInterDemo.execute("",map);
+	    		}		      
+			}				
 		      catch(Exception e){
 		    	  e.printStackTrace();
 	        }finally{
