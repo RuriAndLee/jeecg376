@@ -36,6 +36,14 @@ public interface WmsStockDao {
 	
 	/**
 	 * 查询返回Java对象
+	 * @param id
+	 * @return
+	 */
+	@Sql("select * from wms_stock where goodsno = :goodsno and stockqty =:soqty order by locno limit 1")
+	WmsStock findStockBySodtl(@Param("goodsno") String goodsno,@Param("soqty") String soqty);
+	
+	/**
+	 * 查询返回Java对象
 	 * @deprecated SQL中采用freemarker语法取值,注意需要手工加上单引号（这种写法有SQL注入风险）
 	 * @param id
 	 * @return
@@ -97,7 +105,7 @@ public interface WmsStockDao {
 	 * @param wmsstock
 	 */
 	@Sql("delete from wms_stock where id = :id")
-	public void delete(@Param("id") String id);
+	public void delete(@Param("id") Integer id);
 	
 	/**
 	 * 返回List<Map>类型，全部数据

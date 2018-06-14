@@ -81,7 +81,7 @@ public class WmsFetchService {
 	}
 	
 	/**
-	 * 事务一致性测试
+	 * 入库上架
 	 */
 	@Transactional
 	public void fetchTransactionalInsert(Map map){
@@ -113,8 +113,8 @@ public class WmsFetchService {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				updateFetchStatus((String) map.get("id"));
 			}
+			updateFetchStatus((String) map.get("id"));
 		} 
 	//查找货位
 	public WmsLoc findLoc(String goodsno) throws BusinessException {

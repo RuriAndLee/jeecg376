@@ -29,7 +29,7 @@ public class ConstSetBA {
 	
  	/**
      * 2018-06-06 pengwei
-     * 通知单总单状态 
+     * 入库单总单状态 
      */
 	  public static final String FETCHSTATUS_INVALID = "0"; //作废
 	  public static final String FETCHSTATUS_INPUT = "1"; //录入
@@ -38,7 +38,16 @@ public class ConstSetBA {
 	  public static final String FETCHSTATUS_CHECK="4"; 
 	  public static final String FETCHSTATUS_RACK ="5"; 
 	  
-	
+		/**
+	     * 2018-06-14 pengwei
+	     * 出库单总单状态 
+	     */
+		  public static final String SOSTATUS_INVALID = "0"; //作废
+		  public static final String SOSTATUS_INPUT = "1"; //录入
+		  public static final String SOSTATUS_FINISHED = "2"; //完成
+		  public static final String SOSTATUS_RG="3"; 
+		  public static final String SOSTATUS_CHECK="4"; 
+		  public static final String SOSTATUS_RACK ="5"; 
 	
 	
 	  //交易类型
@@ -533,18 +542,18 @@ public class ConstSetBA {
     static public final long SODTLSTATUS_CHECKED = 8; //复核
     static public final long SODTLSTATUS_PRELOAD = 9; //备货完工
 //销售总单状态 by wgg
-    static public final long SOSTATUS_INITIAL = 1; //初始
-    static public final long SOSTATUS_FINISHED = 2; //配货完成
-    static public final long SOSTATUS_OUTTRANATTEMPER = 21; //匹配线路失败
-    static public final long SOSTATUS_HALT = 3; //挂起
-    static public final long SOSTATUS_DELETE = 4; //删除
-    static public final long SOSTATUS_BUILD = 5; //生成路单
-    static public final long SOSTATUS_RELEASE = 6; //释放
-    static public final long SOSTATUS_INPUT = 7; //录入 update for jwz
-
-    static public final long SOSTATUS_CHECKED = 8; //复核
-    static public final long SOSTATUS_PRELOAD = 9; //备货完工
-    static public final long SOSTATUS_SENDOUT = 10; //发货
+//    static public final long SOSTATUS_INITIAL = 1; //初始
+//    static public final long SOSTATUS_FINISHED = 2; //配货完成
+//    static public final long SOSTATUS_OUTTRANATTEMPER = 21; //匹配线路失败
+//    static public final long SOSTATUS_HALT = 3; //挂起
+//    static public final long SOSTATUS_DELETE = 4; //删除
+//    static public final long SOSTATUS_BUILD = 5; //生成路单
+//    static public final long SOSTATUS_RELEASE = 6; //释放
+//    static public final long SOSTATUS_INPUT = 7; //录入 update for jwz
+//
+//    static public final long SOSTATUS_CHECKED = 8; //复核
+//    static public final long SOSTATUS_PRELOAD = 9; //备货完工
+//    static public final long SOSTATUS_SENDOUT = 10; //发货
 
 
 //销售单作业调度状态 by mgp
