@@ -28,7 +28,7 @@ public class KedaCgformJavaInterClear implements CgformEnhanceJavaInter {
 			
 			throw new BusinessException("不需要进行异常清除!");
 		}  
-
+ 
 		try{
 	    	WmsFetchDao fetchDao = (WmsFetchDao) factory.getBean("wmsFetchDao");
 			WmsFetch fetch = new WmsFetch();

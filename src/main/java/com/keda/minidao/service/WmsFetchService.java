@@ -90,7 +90,7 @@ public class WmsFetchService {
 		List<WmsFetchdtl> fetchdtllist = fetchdtlDao.getDtlByFetchId(fetch.getId());
 			for(WmsFetchdtl fdtl:fetchdtllist){
 				//查找货位
-				WmsLoc loc = findLoc(fdtl.getGoodsno());
+				WmsLoc loc = findLoc(fdtl.getGoodsno());				
 				if(loc == null){
 					throw new BusinessException("当前无空货位");
 				}
@@ -115,7 +115,7 @@ public class WmsFetchService {
 				}
 			}
 			updateFetchStatus((String) map.get("id"));
-		} 
+	} 
 	//查找货位
 	public WmsLoc findLoc(String goodsno) throws BusinessException {
 	    String locno = null; 

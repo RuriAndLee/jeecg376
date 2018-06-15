@@ -59,24 +59,22 @@ public class KedaPutawaySendTask implements Job{
 	    		map.put("status", "0");
 	    		KedaCgformJavaInterDemo kedacgformJavaInterDemo = new KedaCgformJavaInterDemo();
 	    		kedacgformJavaInterDemo.execute("",map);
-	    		}		      
-			}				
-		      catch(Exception e){
+	    	}		      
+		}				
+		     catch(Exception e){
 		    	  e.printStackTrace();
 		    	
-	        }finally{
+	         }finally{
 	            // 关闭资源
-		try {			
-			
-			tSSmsService.send();
-		
-			} catch (Exception e) {		
+		     try {						
+		    	 tSSmsService.send();		
+			 } catch (Exception e) {		
 				e.printStackTrace();
-			}
-		org.jeecgframework.core.util.LogUtil.info("===================定时入库任务结束===================");
-		long end = System.currentTimeMillis();
-		long times = end - start;
-		org.jeecgframework.core.util.LogUtil.info("总耗时"+times+"毫秒");
+			 }
+		     org.jeecgframework.core.util.LogUtil.info("===================定时入库任务结束===================");
+		     long end = System.currentTimeMillis();
+		     long times = end - start;
+		     org.jeecgframework.core.util.LogUtil.info("总耗时"+times+"毫秒");
 	        }
 	}
 	
