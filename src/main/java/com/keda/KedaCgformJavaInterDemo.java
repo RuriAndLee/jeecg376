@@ -41,18 +41,20 @@ public class KedaCgformJavaInterDemo implements CgformEnhanceJavaInter {
 	
 	@Override
     public void execute(String tableName,Map map) throws BusinessException {
-		try {
+		
 			LogUtil.info("============调用[java增强]成功!========tableName:"+tableName+"===map==="+map);
-			if ((String) map.get("status") == ConstSetBA.FETCHSTATUS_FINISHED) {
+			if ( (String) map.get("status") == ConstSetBA.FETCHSTATUS_FINISHED || ((String)map.get("status")).equals(ConstSetBA.FETCHSTATUS_FINISHED)) {
 				throw new BusinessException("已经完成的订单不能再次提交上架");
 			}
+			try{
 			BeanFactory factory = new ClassPathXmlApplicationContext("applicationContext.xml");
 			WmsFetchService wmsFetchService = (WmsFetchService) factory.getBean("wmsFetchService");
 			//启动入库事务
 			wmsFetchService.fetchTransactionalInsert(map);
-	    }catch (Exception e) {
-			log.error(e.getMessage(), e);
-			throw new BusinessException(e);
-		}
+	        }catch (Exception e) {
+	        	
+	    	e.printStackTrace();
+
+		}	
 	}
 }

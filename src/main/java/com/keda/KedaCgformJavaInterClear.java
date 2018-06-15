@@ -24,23 +24,23 @@ public class KedaCgformJavaInterClear implements CgformEnhanceJavaInter {
 	public void execute(String tableName, Map map) throws BusinessException {
 		LogUtil.info("============调用[java增强]成功!========tableName:"+tableName+"===map==="+map);
 		//无异常信息时返回信息
-		if (Long.valueOf((String) map.get("error_msg")) == null){
+		if ((String) map.get("error_msg") == "null"||((String) map.get("error_msg")).equals("")){
 			
 			throw new BusinessException("不需要进行异常清除!");
 		}  
-
 
 		try{
 	    	WmsFetchDao fetchDao = (WmsFetchDao) factory.getBean("wmsFetchDao");
 			WmsFetch fetch = new WmsFetch();
 			fetch = fetchDao.get((String)map.get("id"));
-			fetch.setError_msg("null");
+			fetch.setError_msg("");
 			fetchDao.update(fetch);
 
 	        }catch(Exception e){
-				throw new BusinessException(e.getMessage());
+				e.printStackTrace();
 	        }finally{
 	            // 关闭资源
 	        }
+		
 	}
 }

@@ -1,14 +1,16 @@
 package com.keda;
 
-import java.util.Collection;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.keda.KedaCgformJavaInterDemo;
 import com.keda.minidao.dao.WmsFetchDao;
 import com.keda.minidao.entity.WmsFetch;
 
+import org.jeecgframework.core.common.exception.BusinessException;
 import org.jeecgframework.web.system.sms.service.TSSmsServiceI;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -44,37 +46,40 @@ public class KedaPutawaySendTask implements Job{
 		long start = System.currentTimeMillis();
 		org.jeecgframework.core.util.LogUtil.info("===================定时入库任务开始===================");	
 		Map<String,Object> map = new HashMap<String,Object>();
-
+		WmsFetchDao fetchDao = (WmsFetchDao) factory.getBean("wmsFetchDao");
+		WmsFetch fetch = new WmsFetch();
 		try{
-	    	WmsFetchDao fetchDao = (WmsFetchDao) factory.getBean("wmsFetchDao");
-	    	WmsFetch fetch = new WmsFetch();
-
-	    	java.util.List<Map<String, Object>> listone=fetchDao.getMap("0",null );
+	    	
+	    	
+	    	List<Map<String, Object>> listone=fetchDao.getMap("0",null );
 	        for(int i=0;i<listone.size();i++) {
 	        	Map<String,Object> map1=listone.get(i);
-	        	Object str1 =map1.get("id");
-	        	String str2 = str1 +"";
-	        	map.put("id", str2);
-				map.put("status", "0");
-    			KedaCgformJavaInterDemo kedacgformJavaInterDemo = new KedaCgformJavaInterDemo();
-    			kedacgformJavaInterDemo.execute("",map);
+	        	String str =String.valueOf( map1.get("id"));	        
+	    		map.put("id", str);
+	    		map.put("status", "0");
+	    		KedaCgformJavaInterDemo kedacgformJavaInterDemo = new KedaCgformJavaInterDemo();
+	    		kedacgformJavaInterDemo.execute("",map);
 	    		}		      
 			}				
 		      catch(Exception e){
 		    	  e.printStackTrace();
+		    	
 	        }finally{
 	            // 关闭资源
 		try {			
+			
 			tSSmsService.send();
-		} catch (Exception e) {		
-			e.printStackTrace();
-		}
+		
+			} catch (Exception e) {		
+				e.printStackTrace();
+			}
 		org.jeecgframework.core.util.LogUtil.info("===================定时入库任务结束===================");
 		long end = System.currentTimeMillis();
 		long times = end - start;
 		org.jeecgframework.core.util.LogUtil.info("总耗时"+times+"毫秒");
-		}
+	        }
 	}
+	
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 		work();
 	}
