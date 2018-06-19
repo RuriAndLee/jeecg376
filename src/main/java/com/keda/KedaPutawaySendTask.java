@@ -9,6 +9,13 @@ import java.util.Map;
 import com.keda.KedaCgformJavaInterDemo;
 import com.keda.minidao.dao.WmsFetchDao;
 import com.keda.minidao.entity.WmsFetch;
+import com.keda.minidao.dao.WmsFetchdtlDao;
+import com.keda.minidao.entity.WmsFetch;
+import com.keda.minidao.entity.WmsFetchdtl;
+import com.keda.minidao.service.WmsFetchService;
+
+
+
 
 import org.jeecgframework.core.common.exception.BusinessException;
 import org.jeecgframework.web.system.sms.service.TSSmsServiceI;
@@ -39,11 +46,14 @@ public class KedaPutawaySendTask implements Job{
 
 	@Autowired
 	private TSSmsServiceI tSSmsService;
+	private WmsFetchDao fetchDao;
 
 
 
 	public void work(){
 		long start = System.currentTimeMillis();
+		BeanFactory factory = new ClassPathXmlApplicationContext("applicationContext.xml");
+		WmsFetchService wmsFetchService = (WmsFetchService) factory.getBean("wmsFetchService");
 		org.jeecgframework.core.util.LogUtil.info("===================定时入库任务开始===================");	
 		Map<String,Object> map = new HashMap<String,Object>();
 		WmsFetchDao fetchDao = (WmsFetchDao) factory.getBean("wmsFetchDao");
@@ -63,14 +73,11 @@ public class KedaPutawaySendTask implements Job{
 		}				
 		     catch(Exception e){
 		    	  e.printStackTrace();
-		    	
+		    	  wmsFetchService.updateFetchErrormsg((String) map.get("id"),e.getMessage());
+		    	  
 	         }finally{
 	            // 关闭资源
-		     try {						
-		    	 tSSmsService.send();		
-			 } catch (Exception e) {		
-				e.printStackTrace();
-			 }
+
 		     org.jeecgframework.core.util.LogUtil.info("===================定时入库任务结束===================");
 		     long end = System.currentTimeMillis();
 		     long times = end - start;
@@ -81,5 +88,8 @@ public class KedaPutawaySendTask implements Job{
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 		work();
 	}
+
+
+
 }
 	

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -73,6 +74,7 @@ public class CgFormBuildController extends BaseController {
 	private CgformTemplateServiceI cgformTemplateService;
 	@Autowired
 	private CgFormFieldServiceI cgFormFieldService;
+
 
 	@RequestMapping(value = "ftlForm/{tableName}/goAdd")
 	public void goAdd(@PathVariable("tableName") String tableName,HttpServletRequest request,HttpServletResponse response) {

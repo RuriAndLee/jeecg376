@@ -91,7 +91,7 @@ public class WmsFetchService {
 			for(WmsFetchdtl fdtl:fetchdtllist){
 				//查找货位
 				WmsLoc loc = findLoc(fdtl.getGoodsno());				
-				if(loc == null){
+				if(loc.getLocno() == null){
 					throw new BusinessException("当前无空货位");
 				}
 				//根据货位查找
@@ -112,6 +112,7 @@ public class WmsFetchService {
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				
 				}
 			}
 			updateFetchStatus((String) map.get("id"));
@@ -175,6 +176,20 @@ public class WmsFetchService {
 			throw new BusinessException(e.getMessage());
 		}
 	}
+	
+	//填入入库异常信息
+		public void updateFetchErrormsg (String fetchid,String error_msg) throws BusinessException{
+			try{
+				WmsFetch fetch = new WmsFetch();
+				fetch = fetchDao.get(fetchid);
+				fetch.setError_msg(error_msg);
+				fetchDao.update(fetch);		
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}	
+
+	
 	public void insertStoretrans(Map values) throws Exception {
 		if (values == null) {
 			return;
