@@ -23,8 +23,6 @@ import com.keda.minidao.entity.WmsStock;
  */
 @Repository
 public interface WmsFetchDao {
-
-	
 	
 	/**
 	 * 查询返回Java对象
@@ -114,7 +112,7 @@ public interface WmsFetchDao {
 	 * @param id
 	 * @return
 	 */
-	@Sql("select id  from wms_fetch where status = :status and  error_msg is :error_msg")
+	@Sql("select id  from wms_fetch where status = :status and  (error_msg  = :error_msg|| error_msg is null)")
 	List<Map<String,Object>> getMap(@Param("status") String status,@Param("error_msg") String error_msg);
 	
 	/**

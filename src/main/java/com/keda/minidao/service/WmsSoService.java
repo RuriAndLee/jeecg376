@@ -24,6 +24,7 @@ import com.keda.minidao.dao.WmsSodtlDao;
 import com.keda.minidao.dao.WmsLocDao;
 import com.keda.minidao.dao.WmsStockDao;
 import com.keda.minidao.dao.WmsTransDao;
+import com.keda.minidao.entity.WmsFetch;
 import com.keda.minidao.entity.WmsSo;
 import com.keda.minidao.entity.WmsSodtl;
 import com.keda.minidao.entity.WmsLoc;
@@ -105,30 +106,7 @@ public class WmsSoService {
 			}
 			updateSoStatus((String) map.get("id"));
 		} 
-	//查找货位
-	public WmsLoc findLoc(String goodsno) throws BusinessException {
-	    String locno = null; 
-	    WmsLoc loc = new WmsLoc();
-		WmsStock stock = new WmsStock();
-		stock.setGoodsno(goodsno);
-		//根据goodsno查找当前库存的货位编号
-		List<WmsStock> stocklist= stockDao.getStockByGoodsno(goodsno);//增加顶层标志判断 
-		for(WmsStock s:stocklist){
-			if (s.getLocno() != null && s.getLocno() != "") {
-				loc = locDao.getLocByLocno((String)s.getLocno());
-			}
-		}
-	    if(locno == null || locno == ""){
-	    	//查找当前空闲的货位
-	    	List<WmsLoc> loclist = locDao.getEmptyLoc();
-	    	for(WmsLoc l:loclist){
-	    		if (l.getLocno() != null) {
-					loc = l;
-				}
-	    	}
-	    }
-	    return loc;
-	}   
+  
 	//组装交易信息生成交易记录
 	public Map genTransValue(WmsSo so,WmsSodtl sdtl,WmsStock stock){
 		try {
@@ -165,6 +143,17 @@ public class WmsSoService {
 		}
 	}
 	
+	//填入出库异常信息
+	public void updateSoErrormsg (String soid,String error_msg) throws BusinessException{
+		try{
+			WmsSo so = new WmsSo();
+			so = soDao.get(soid);
+			so.setError_msg(error_msg);
+			soDao.update(so);		
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 	//生成交易信息
 	public void insertStoretrans(Map values) throws Exception {
 		if (values == null) {

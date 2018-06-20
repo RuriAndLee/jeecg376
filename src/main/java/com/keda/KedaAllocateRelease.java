@@ -44,23 +44,28 @@ import java.util.Map;
 
 @Service("kedaAllocateRelease")
 public class KedaAllocateRelease implements CgformEnhanceJavaInter {
+	
     static private Log log = LogFactory.getLog(KedaAllocateRelease.class.getName());
+	private WmsSoService wmsSoService;
 	
 	@Override
-    public void execute(String tableName,Map map) throws BusinessException {
+    public void execute(String tableName,Map map) {
+		BeanFactory factory = new ClassPathXmlApplicationContext("applicationContext.xml");
+		WmsSoService wmsSoService = (WmsSoService) factory.getBean("wmsSoService");
+		LogUtil.info("============调用[java增强]成功!========tableName:"+tableName+"===map==="+map);
 		try {
-			LogUtil.info("============调用[java增强]成功!========tableName:"+tableName+"===map==="+map);
+			
 			if ((String) map.get("status") == ConstSetBA.FETCHSTATUS_FINISHED ||
 					((String) map.get("status")).equals(ConstSetBA.FETCHSTATUS_FINISHED)) {
 				throw new BusinessException("已经完成的出库单不能再次分配");
 			}
-			BeanFactory factory = new ClassPathXmlApplicationContext("applicationContext.xml");
-			WmsSoService wmsSoService = (WmsSoService) factory.getBean("wmsSoService");
+
 			//启动出库事务
 			wmsSoService.soTransactionalInsert(map);
 	    }catch (Exception e) {
-			log.error(e.getMessage(), e);
-			throw new BusinessException(e);
+			e.printStackTrace();
+			wmsSoService.updateSoErrormsg((String) map.get("id"), e.getMessage());
+			throw new BusinessException(e.getMessage());
 		}
 	}
 }

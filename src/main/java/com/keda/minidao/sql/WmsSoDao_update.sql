@@ -33,4 +33,7 @@ SET
 		<#if so.status ?exists>
 		   status = :so.status,
 		</#if>
+		<#if so.error_msg ?exists>
+		   error_msg = :so.error_msg,
+		</#if>
 WHERE id = :so.id

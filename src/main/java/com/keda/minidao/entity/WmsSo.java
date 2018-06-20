@@ -21,7 +21,8 @@ public class WmsSo implements java.io.Serializable {
 	private String bpmStatus;
 	private String sono;
 	private String status;
-
+	private String error_msg;
+	
 	public WmsSo() {
 	}
 
@@ -40,6 +41,8 @@ public class WmsSo implements java.io.Serializable {
 		this.bpmStatus = bpmStatus;
 		this.sono = sono;
 		this.status = status;
+		this.error_msg = error_msg;
+		
 	}
 
 	public Integer getId() {
@@ -137,5 +140,12 @@ public class WmsSo implements java.io.Serializable {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
+	
+	public String getError_msg() {
+		return this.error_msg;
+	}
+	public void setError_msg(String error_msg){
+		this.error_msg = error_msg;
+	}
+	
 }
