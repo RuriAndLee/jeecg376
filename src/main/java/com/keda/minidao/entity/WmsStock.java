@@ -27,6 +27,7 @@ public class WmsStock implements java.io.Serializable {
 	private String sysCompanyCode;
 	private String bpmStatus;
 	private String lotno;
+	private Integer layer;
 
 	public WmsStock() {
 	}
@@ -36,7 +37,7 @@ public class WmsStock implements java.io.Serializable {
 			String stockqty, String createName, String createBy,
 			Date createDate, String updateName, String updateBy,
 			Date updateDate, String sysOrgCode, String sysCompanyCode,
-			String bpmStatus, String lotno) {
+			String bpmStatus, String lotno, Integer layer) {
 		this.locno = locno;
 		this.zoneno = zoneno;
 		this.goodsno = goodsno;
@@ -54,6 +55,7 @@ public class WmsStock implements java.io.Serializable {
 		this.sysCompanyCode = sysCompanyCode;
 		this.bpmStatus = bpmStatus;
 		this.lotno = lotno;
+		this.layer = layer;
 	}
 
 	public Integer getId() {
@@ -198,6 +200,14 @@ public class WmsStock implements java.io.Serializable {
 
 	public void setLotno(String lotno) {
 		this.lotno = lotno;
+	}
+	
+	public Integer getLayer() {
+		return this.layer;
+	}
+
+	public void setLayer(Integer layer) {
+		this.layer = layer;
 	}
 
 }

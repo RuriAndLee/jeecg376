@@ -42,6 +42,15 @@ public interface WmsStockDao {
 	@Sql("select * from wms_stock where goodsno = :goodsno and stockqty =:soqty order by locno limit 1")
 	WmsStock findStockBySodtl(@Param("goodsno") String goodsno,@Param("soqty") String soqty);
 	
+	
+	/**
+	 * 查询返回Java对象
+	 * @param id
+	 * @return
+	 */
+	@Sql("select * from wms_stock where goodsno = :goodsno and locno =:locno and layer =:layer ")
+	WmsStock findStockByAdj(@Param("goodsno") String goodsno,@Param("locno") String locno,@Param("layer") Integer layer);
+	
 	/**
 	 * 查询返回Java对象
 	 * @deprecated SQL中采用freemarker语法取值,注意需要手工加上单引号（这种写法有SQL注入风险）

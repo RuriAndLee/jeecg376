@@ -59,8 +59,12 @@ public class ConstSetBA {
 	    static public final String TRANS_STATUS_UNDER = "1"; //进行
 	    static public final String TRANS_STATUS_FINISHED = "2"; //完成
 	    
-	
-	
+	    /**
+	     * 2018-06-20 pengwei
+	     * 库存调整单状态 
+	     */
+	    public static final String ADJSTATUS_INIT="0"; 
+		public static final String ADJSTATUS_FIHISHED ="1"; 
 	
 	
 	

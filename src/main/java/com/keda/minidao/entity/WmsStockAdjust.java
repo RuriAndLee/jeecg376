@@ -25,6 +25,7 @@ public class WmsStockAdjust implements java.io.Serializable {
 	private String locno;
 	private String zoneno;
 	private String stockqty;
+	private String adjstatus;
 
 	public WmsStockAdjust() {
 	}
@@ -33,7 +34,7 @@ public class WmsStockAdjust implements java.io.Serializable {
 			String updateName, String updateBy, Date updateDate,
 			String sysOrgCode, String sysCompanyCode, String bpmStatus,
 			String goodsno, String goodsname, String lotno, String locno,
-			String zoneno, String stockqty) {
+			String zoneno, String stockqty, String adjstatus) {
 		this.createName = createName;
 		this.createBy = createBy;
 		this.createDate = createDate;
@@ -178,5 +179,12 @@ public class WmsStockAdjust implements java.io.Serializable {
 	public void setStockqty(String stockqty) {
 		this.stockqty = stockqty;
 	}
+	public String getAdjStatus() {
+		return this.adjstatus;
+	}
 
+	public void setAdjStatus(String adjstatus) {
+		this.adjstatus = adjstatus;
+	}
+	
 }
