@@ -27,6 +27,23 @@ public interface WmsStockDao {
 	
 	
 	/**
+	 * 修改数据
+	 * @param stock
+	 * @return
+	 */
+	@Sql("update wms_stock set topflag = 1 where locno = :locno and layer = :layer")
+	int updateStockTopflag(@Param("locno") String locno,@Param("layer") int layer);
+	
+	
+	/**
+	 * 修改数据
+	 * @param stock
+	 * @return
+	 */
+	@Sql("update wms_stock set topflag = 0 where locno = :locno and id != :newStockid")
+	int updateTopflagByLocno(@Param("locno") String locno,@Param("newStockid") int newStockid);
+	
+	/**
 	 * 查询返回Java对象
 	 * @param id
 	 * @return
@@ -39,8 +56,8 @@ public interface WmsStockDao {
 	 * @param id
 	 * @return
 	 */
-	@Sql("select * from wms_stock where goodsno = :goodsno and stockqty =:soqty order by locno limit 1")
-	WmsStock findStockBySodtl(@Param("goodsno") String goodsno,@Param("soqty") String soqty);
+	@Sql("select * from wms_stock where locno = :locno and goodsno = :goodsno and stockqty =:soqty order by layer desc limit 1")
+	WmsStock findStockBySodtl(@Param("goodsno") String goodsno,@Param("soqty") String soqty,@Param("locno")  String locno);
 	
 	
 	/**
@@ -65,7 +82,7 @@ public interface WmsStockDao {
 	 * @param id
 	 * @return
 	 */
-	@Sql("select * from wms_stock where goodsno = :goodsno")
+	@Sql("select s.* from wms_stock s,wms_loc l where s.locno = l.locno and s.goodsno = :goodsno and l.topflag = 0 order by locno limit 1")
 	List<WmsStock> getStockByGoodsno(@Param("goodsno") String goodsno);
 	
 	/**

@@ -12,6 +12,7 @@ import org.jeecgframework.minidao.pojo.MiniDaoPage;
 import org.springframework.stereotype.Repository;
 
 import com.keda.minidao.entity.WmsLoc;
+import com.keda.minidao.entity.WmsStock;
 
 
 
@@ -25,7 +26,13 @@ import com.keda.minidao.entity.WmsLoc;
 public interface WmsLocDao {
 
 	
-	
+	/**
+	 * 查询返回Java对象
+	 * @param id
+	 * @return
+	 */
+	@Sql("select * from wms_loc where locno = :stock.locno and zoneno = :stock.zoneno")
+	WmsLoc getLocByStock(@Param("stock") WmsStock stock);
 	/**
 	 * 查询返回Java对象
 	 * @param id
@@ -64,7 +71,6 @@ public interface WmsLocDao {
 	 * @param loc
 	 * @return
 	 */
-	@Sql("select * from wms_loc where id = '${id}'")
 	int update(@Param("loc") WmsLoc wmsloc);
 	
 	/**
