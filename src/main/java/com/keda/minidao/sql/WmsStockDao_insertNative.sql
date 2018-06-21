@@ -18,7 +18,9 @@ INSERT  INTO
       ,sys_org_code                       
       ,sys_company_code                         
       ,bpm_status                      
-      ,lotno                    
+      ,lotno      
+      ,layer
+      ,topflag
       ) 
 values
       (
@@ -40,4 +42,6 @@ values
       ,:wmsstock.sysCompanyCode                        
       ,:wmsstock.bpmStatus                      
       ,:wmsstock.lotno                    
+      ,:wmsstock.layer                    
+      ,:wmsstock.topflag                    
       )
