@@ -67,9 +67,23 @@ public class ConstSetBA {
 		public static final String ADJSTATUS_FIHISHED ="1"; 
 	
 	
+	    /**
+	     * 2018-06-21 pengwei
+	     * 库存顶层标志
+	     */
+	    public static final String STOCK_UNTOP="0"; 
+		public static final String STOCK_TOP ="1"; 	
 	
-	
-	
+		
+		public static final Integer LAYER_ADD =1; 	//加一
+		public static final Integer LAYER_SUB =-1; 	//减一
+		
+		public static final Integer LAYER_NUMBER = 6; 	//货位最高层数
+
+		//货位层数标志
+		public static final String TOPFLAG_TRUE = "1"; 	   //顶层
+		public static final String TOPFLAG_FALSE = "0"; 	//非顶层
+
 	
 	// 系统消息状态
 	static public final short MSG_STATUS_CANCEL = 0; // 作废

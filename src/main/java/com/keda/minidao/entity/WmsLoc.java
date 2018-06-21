@@ -29,7 +29,7 @@ public class WmsLoc implements java.io.Serializable {
 	private String weight;
 	private String mix;
 	private String remarks;
-	private String top;
+	private String topflag;
 	private Integer layer;
 
 	public WmsLoc() {
@@ -60,7 +60,7 @@ public class WmsLoc implements java.io.Serializable {
 		this.weight = weight;
 		this.mix = mix;
 		this.remarks = remarks;
-		this.top = top;
+		this.topflag = top;
 		this.layer = layer;
 	}
 
@@ -224,12 +224,12 @@ public class WmsLoc implements java.io.Serializable {
 		this.remarks = remarks;
 	}
 
-	public String getTop() {
-		return this.top;
+	public String getTopflag() {
+		return this.topflag;
 	}
 
-	public void setTop(String top) {
-		this.top = top;
+	public void setTopflag(String topflag) {
+		this.topflag = topflag;
 	}
 
 	public Integer getLayer() {
