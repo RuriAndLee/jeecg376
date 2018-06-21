@@ -27,6 +27,7 @@ public class WmsStock implements java.io.Serializable {
 	private String sysCompanyCode;
 	private String bpmStatus;
 	private String lotno;
+	private String topflag;
 	private Integer layer;
 
 	public WmsStock() {
@@ -209,5 +210,12 @@ public class WmsStock implements java.io.Serializable {
 	public void setLayer(Integer layer) {
 		this.layer = layer;
 	}
+	public String getTopflag() {
+		return this.topflag;
+	}
 
+	public void setTopflag(String topflag) {
+		this.topflag = topflag;
+	}
+	
 }

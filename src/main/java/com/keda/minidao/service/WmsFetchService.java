@@ -86,6 +86,7 @@ public class WmsFetchService {
 	@Transactional
 	public void fetchTransactionalInsert(Map map){
 		WmsFetch fetch = new WmsFetch();
+		WmsLocService wmsLocService = new WmsLocService();
 		fetch = fetchDao.get((String)map.get("id"));
 		List<WmsFetchdtl> fetchdtllist = fetchdtlDao.getDtlByFetchId(fetch.getId());
 			for(WmsFetchdtl fdtl:fetchdtllist){
@@ -96,6 +97,15 @@ public class WmsFetchService {
 				}
 				//根据货位查找
 				WmsStock stock = new WmsStock();
+				
+				//记录库存层数
+				stock.setLayer(loc.getLayer()+1);
+				
+				if (stock.getLayer() == ConstSetBA.LAYER_NUMBER) {
+					loc.setTopflag(ConstSetBA.TOPFLAG_TRUE);
+					locDao.update(loc);
+				}
+				
 				stock.setGoodsno(fdtl.getGoodsno());
 				stock.setStockqty(fdtl.getFetchqty());
 				stock.setGoodsunit(fdtl.getGoodsunit());
@@ -105,7 +115,8 @@ public class WmsFetchService {
 				stock.setCreateBy(fetch.getCreateBy());
 				stock.setLocno(loc.getLocno());
 				stock.setZoneno(loc.getZoneno());
-				stockDao.insertNative(stock);
+				stock.setTopflag(ConstSetBA.STOCK_TOP);
+				int newStockid = stockDao.insertNative(stock);
 				Map value = genTransValue(fetch,fdtl,stock);
 				try {
 					insertStoretrans(value);
@@ -114,8 +125,16 @@ public class WmsFetchService {
 					e.printStackTrace();
 				
 				}
+				
+				//当前货位层数增加
+				wmsLocService.updateLocLayerByLocid(loc.getId().toString(), ConstSetBA.LAYER_ADD,locDao);
+				
+				//当前货位的其他库存顶层标志清零
+				WmsStockService wmsStockService = new WmsStockService();
+				wmsStockService.updateLocTopflag(loc.getLocno(),newStockid,stockDao);
 			}
 			updateFetchStatus((String) map.get("id"));
+			
 	} 
 	//查找货位
 	public WmsLoc findLoc(String goodsno) throws BusinessException {
@@ -128,6 +147,8 @@ public class WmsFetchService {
 		for(WmsStock s:stocklist){
 			if (s.getLocno() != null && s.getLocno() != "") {
 				loc = locDao.getLocByLocno((String)s.getLocno());
+				locno = loc.getLocno();
+				continue;
 			}
 		}
 	    if(locno == null || locno == ""){

@@ -93,7 +93,7 @@ public class WmsSoService {
 			for(WmsSodtl sdtl:sodtllist){
 				WmsStock stock = new WmsStock();
 				//查询满足条件的单条库存记录，等待扣减
-				stock = stockDao.findStockBySodtl(sdtl.getGoodsno(),sdtl.getSoqty());
+				stock = stockDao.findStockBySodtl(sdtl.getGoodsno(),sdtl.getSoqty(),sdtl.getLocno());
 				//根据带扣减库存记录生成交易信息
 				Map value = genTransValue(so,sdtl,stock);
 				try {
@@ -102,6 +102,24 @@ public class WmsSoService {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
+				//获取货位
+				WmsLocService wmsLocService = new WmsLocService();
+				WmsLoc loc = wmsLocService.getLocByStock(stock, locDao);
+				//货位的层数-1
+//				wmsLocService.updateLocLayerByLocid(loc.getId().toString(), ConstSetBA.LAYER_SUB,locDao);
+				loc.setLayer(loc.getLayer()+ConstSetBA.LAYER_SUB);
+				
+				//如果货位是顶层，则出库时顶层标志清零
+				if (loc.getTopflag().equals(ConstSetBA.TOPFLAG_TRUE)) {
+					loc.setTopflag(ConstSetBA.TOPFLAG_FALSE);
+				}
+				locDao.update(loc);	
+				
+				//位于出库库存下面的库存顶层标志置为1，根据locno，layer-1，定位到下一个库存
+				WmsStockService wmsStockService = new WmsStockService();
+				wmsStockService.updateStockTopflag(stock, stockDao);
+				
 				stockDao.delete(stock.getId());
 			}
 			updateSoStatus((String) map.get("id"));

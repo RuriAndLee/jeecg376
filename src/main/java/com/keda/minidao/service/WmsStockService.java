@@ -53,10 +53,6 @@ public class WmsStockService {
 	@Transactional
 	public void stockAdjustTransactionalInsert(Map map){
 		
-		WmsStockAdjust stockAdjust = new WmsStockAdjust();
-		stockAdjust = stockAdjustDao.get((String)map.get("id"));
-		
-		
 		String locno = (String)map.get("orglocno");
 		String goodsno = (String)map.get("goodsno");
 		Integer orglayer = (Integer.valueOf((String)map.get("orglayer")));
@@ -80,6 +76,28 @@ public class WmsStockService {
 			stockAdjustDao.updateStockAdjustStatus(stockadjustid,String.valueOf(ConstSetBA.ADJSTATUS_FIHISHED));
 			
 		} catch (Exception e) {
+			throw new BusinessException(e.getMessage());
+		}
+	}
+	
+	
+	
+	//设置即将出库的库存下层为顶层
+	public void updateStockTopflag(WmsStock stock,WmsStockDao stockDao) throws BusinessException {
+		try {
+			stockDao.updateStockTopflag(stock.getLocno(),stock.getLayer()-1);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			throw new BusinessException(e.getMessage());
+		}
+	}
+	
+	//更新货位库存顶层标志为非顶层
+	public void updateLocTopflag(String locno,int newStockid,WmsStockDao stockDao) throws BusinessException {
+		try {
+			stockDao.updateTopflagByLocno(locno,newStockid);
+		} catch (Exception e) {
+			log.error(e.getMessage());
 			throw new BusinessException(e.getMessage());
 		}
 	}
