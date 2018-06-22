@@ -94,6 +94,9 @@ public class WmsSoService {
 				WmsStock stock = new WmsStock();
 				//查询满足条件的单条库存记录，等待扣减
 				stock = stockDao.findStockBySodtl(sdtl.getGoodsno(),sdtl.getSoqty(),sdtl.getLocno());
+				if (stock == null) {
+					throw new BusinessException("库存可能已经分配，请重新做单！");
+				}
 				//根据带扣减库存记录生成交易信息
 				Map value = genTransValue(so,sdtl,stock);
 				try {
