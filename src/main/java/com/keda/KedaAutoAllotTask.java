@@ -8,14 +8,19 @@ import java.util.Map;
 
 import com.keda.KedaCgformJavaInterDemo;
 import com.keda.minidao.dao.WmsFetchDao;
+import com.keda.minidao.dao.WmsSoDao;
 import com.keda.minidao.entity.WmsFetch;
 import com.keda.minidao.dao.WmsFetchdtlDao;
 import com.keda.minidao.entity.WmsFetch;
 import com.keda.minidao.entity.WmsFetchdtl;
+import com.keda.minidao.entity.WmsSo;
 import com.keda.minidao.service.WmsFetchService;
 
 
 
+
+
+import com.keda.minidao.service.WmsSoService;
 
 import org.jeecgframework.core.common.exception.BusinessException;
 import org.jeecgframework.web.system.sms.service.TSSmsServiceI;
@@ -35,54 +40,61 @@ import org.springframework.stereotype.Service;
  * 
  */
 
-@Service("kedaPutawaySendTask")
-public class KedaPutawaySendTask implements Job{
+@Service("kedaAutoAllotTask")
+public class KedaAutoAllotTask implements Job{
 	
 	BeanFactory factory;
 	
-	public KedaPutawaySendTask(){
+	public KedaAutoAllotTask(){
 		factory = new ClassPathXmlApplicationContext("applicationContext.xml");
 	}
 
 	@Autowired
 	private TSSmsServiceI tSSmsService;
-	private WmsFetchDao fetchDao;
+	private WmsSoDao soDao;
+
+
 
 	public void work(){
 		long start = System.currentTimeMillis();
 		BeanFactory factory = new ClassPathXmlApplicationContext("applicationContext.xml");
-		WmsFetchService wmsFetchService = (WmsFetchService) factory.getBean("wmsFetchService");
-		org.jeecgframework.core.util.LogUtil.info("===================定时入库任务开始===================");	
+		WmsSoService wmsSoService = (WmsSoService) factory.getBean("wmsSoService");
+		org.jeecgframework.core.util.LogUtil.info("===================定时出库任务开始===================");	
 		Map<String,Object> map = new HashMap<String,Object>();
-		WmsFetchDao fetchDao = (WmsFetchDao) factory.getBean("wmsFetchDao");
-		WmsFetch fetch = new WmsFetch();
+		WmsSoDao soDao = (WmsSoDao) factory.getBean("wmsSoDao");
+		WmsSo so = new WmsSo();
 		try{
-	    		    	
-	    	List<Map<String, Object>> listone=fetchDao.getMap("0", "");
-	        for(int i=0;i<listone.size();i++) {
-	        	Map<String,Object> map1=listone.get(i);
-	        	String str =String.valueOf( map1.get("id"));	        
-	    		map.put("id", str);
+	    	
+	    	
+	    	List<Map<String, Object>> solist=soDao.getMap("0","");
+	        for(int i=0;i<solist.size();i++) {
+	        	Map<String,Object> somap=solist.get(i);
+	        	String id =String.valueOf( somap.get("id"));	        
+	    		map.put("id", id);
 	    		map.put("status", "0");
-	    		KedaCgformJavaInterDemo kedacgformJavaInterDemo = new KedaCgformJavaInterDemo();
-	    		kedacgformJavaInterDemo.execute("",map);
+	    		KedaAllocateRelease kedaallocateRelease = new KedaAllocateRelease();
+	    		kedaallocateRelease.execute("",map);
 	    	}		      
 		}				
 		     catch(Exception e){
 		    	  e.printStackTrace();
-		    	  wmsFetchService.updateFetchErrormsg((String) map.get("id"),e.getMessage());
+		    	  wmsSoService.updateSoErrormsg((String) map.get("id"),e.getMessage());
 		    	  
 	         }finally{
-	        	 
-		     org.jeecgframework.core.util.LogUtil.info("===================定时入库任务结束===================");
+	            // 关闭资源
+
+		     org.jeecgframework.core.util.LogUtil.info("===================定时出库任务结束===================");
 		     long end = System.currentTimeMillis();
 		     long times = end - start;
 		     org.jeecgframework.core.util.LogUtil.info("总耗时"+times+"毫秒");
-	        
-	         }
-	}	
+	        }
+	}
+	
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 		work();
 	}
+
+
+
 }
 	

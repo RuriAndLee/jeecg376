@@ -38,7 +38,7 @@ public interface WmsLocDao {
 	 * @param id
 	 * @return
 	 */
-	@Sql("select * from wms_loc where locno = :locno")
+	@Sql("select l.* from wms_loc l where (l.locno = :locno and l.rackflag = 1) order by l.loclevel ")
 	WmsLoc getLocByLocno(@Param("locno") String locno);
 	
 	/**
@@ -54,7 +54,7 @@ public interface WmsLocDao {
 	 * @param id
 	 * @return
 	 */
-	@Sql(" select l.* from wms_loc l where not exists (select 1 from wms_stock s where s.locno = l.locno) order by l.loclevel ")
+	@Sql(" select l.* from wms_loc l where not exists (select 1 from wms_stock s where s.locno = l.locno|| l.rackflag = 0) order by l.loclevel ")
 	public List<WmsLoc> getEmptyLoc();
 	
 	/**

@@ -147,7 +147,9 @@ public class WmsFetchService {
 		for(WmsStock s:stocklist){
 			if (s.getLocno() != null && s.getLocno() != "") {
 				loc = locDao.getLocByLocno((String)s.getLocno());
-				locno = loc.getLocno();
+				if(loc!=null){
+					locno = loc.getLocno();
+				}
 				continue;
 			}
 		}
